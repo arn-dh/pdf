@@ -21,11 +21,6 @@ function renderContact(site) {
     site.whatsapp_link ||
     site.instagram_link;
 
-  if (!hasContent) {
-    section.style.display = "none";
-    return;
-  }
-
   section.style.display = "flex";
 
   if (site.profile_image) {
