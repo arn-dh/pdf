@@ -1,0 +1,41 @@
+export default async function (input: Input): Promise<unknown> {
+  const usecases = {
+    updatePin: await container.get<UpdateCardPinUsecase>(
+      'UpdateCardPinUsecase',
+    ),
+    destroyCard: await container.get<DestroyCardUsecase>('DestroyCardUsecase'),
+    setCardStatus: await container.get<SetCardStatusUsecase>(
+      'SetCardStatusUsecase',
+    ),
+    createVirtualCard: await container.get<CreateVirtualCardUsecase>(
+      'CreateVirtualCardUsecase',
+    ),
+  }
+  try {
+    input = InputSchema.parse(input)
+    switch (input.query) {
+      case LAMBDA_TREEZOR_SERVICE_CARD_QUERIES.UPSERT_CARD_PIN:
+        await usecases.updatePin.updateCardPin(input.payload)
+        break
+      case LAMBDA_TREEZOR_SERVICE_CARD_QUERIES.DESTROY_CARD:
+        await usecases.destroyCard.destroyCard(input.payload)
+        break
+      case LAMBDA_TREEZOR_SERVICE_CARD_QUERIES.SET_CARD_LOST:
+        await usecases.setCardStatus.setCardLost(input.payload)
+        break
+      case LAMBDA_TREEZOR_SERVICE_CARD_QUERIES.SET_CARD_STOLEN:
+        await usecases.setCardStatus.setCardStolen(input.payload)
+        break
+      case LAMBDA_TREEZOR_SERVICE_CARD_QUERIES.CREATE_VIRTUAL_CARD:
+        return usecases.createVirtualCard.create(input.payload)
+        break
+      default:
+        throw new UseCaseError(
+          `Query ${(input as Input).query} is not implemented`,
+        )
+    }
+  } catch (err) {
+    logger.error(err)
+    throw err
+  }
+}
