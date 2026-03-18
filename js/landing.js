@@ -101,7 +101,6 @@ function renderCards(docs) {
 
 async function initLanding() {
   const status = document.getElementById("status");
-  console.log("SITE DATA:", site);
 
   try {
     const [site, docsRows] = await Promise.all([getSiteData(), getDocsData()]);
