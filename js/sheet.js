@@ -1,14 +1,17 @@
 async function fetchCSV(url) {
   const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error(`Fetch failed: ${res.status}`);
+  }
   const text = await res.text();
   return parseCSV(text);
 }
 
 function parseCSV(text) {
   const rows = [];
-  const lines = text.trim().split("\n");
+  const lines = text.trim().split(/\r?\n/);
 
-  const headers = lines[0].split(",").map(h => h.trim());
+  const headers = splitCSVLine(lines[0]).map(h => h.trim());
 
   for (let i = 1; i < lines.length; i++) {
     const values = splitCSVLine(lines[i]);
@@ -24,7 +27,6 @@ function parseCSV(text) {
   return rows;
 }
 
-// 👉 gestion des virgules dans les champs (important)
 function splitCSVLine(line) {
   const result = [];
   let current = "";
@@ -54,4 +56,10 @@ async function getSiteData() {
 
 async function getDocsData() {
   return await fetchCSV(DOCS_CSV_URL);
+}
+
+function applyTheme(siteRow) {
+  const root = document.documentElement;
+  if (siteRow.primary_color) root.style.setProperty("--primary", siteRow.primary_color);
+  if (siteRow.secondary_color) root.style.setProperty("--secondary", siteRow.secondary_color);
 }
