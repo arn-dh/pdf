@@ -1,41 +1,350 @@
-export default async function (input: Input): Promise<unknown> {
-  const usecases = {
-    updatePin: await container.get<UpdateCardPinUsecase>(
-      'UpdateCardPinUsecase',
-    ),
-    destroyCard: await container.get<DestroyCardUsecase>('DestroyCardUsecase'),
-    setCardStatus: await container.get<SetCardStatusUsecase>(
-      'SetCardStatusUsecase',
-    ),
-    createVirtualCard: await container.get<CreateVirtualCardUsecase>(
-      'CreateVirtualCardUsecase',
-    ),
+:root {
+  --primary: #d88c9a;
+  --secondary: #f7ede2;
+  --text: #1f1f1f;
+  --muted: #666;
+  --bg: #ffffff;
+  --card-border: #ece7e2;
+  --nav-bg: rgba(255,255,255,0.95);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+}
+
+body {
+  min-height: 100vh;
+}
+
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.hero {
+  background: linear-gradient(180deg, var(--secondary) 0%, #ffffff 100%);
+  padding: 64px 20px 40px;
+}
+
+.eyebrow {
+  display: inline-block;
+  background: var(--primary);
+  color: white;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+
+h1 {
+  margin: 0 0 12px;
+  font-size: clamp(32px, 6vw, 56px);
+  line-height: 1.05;
+}
+
+.intro {
+  font-size: clamp(18px, 2.4vw, 24px);
+  line-height: 1.4;
+  margin: 0 0 14px;
+  max-width: 760px;
+}
+
+.description {
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--muted);
+  margin: 0;
+  max-width: 760px;
+}
+
+.section {
+  padding: 24px 20px 40px;
+}
+
+.section-title {
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 18px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px;
+}
+
+.card {
+  grid-column: span 6;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  background: white;
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  padding: 22px 22px 20px;
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(0,0,0,0.07);
+  border-color: var(--primary);
+}
+
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.card-title {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.arrow {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: var(--secondary);
+  display: grid;
+  place-items: center;
+}
+
+.card-slug {
+  font-size: 13px;
+  color: var(--muted);
+  word-break: break-word;
+}
+
+.loading,
+.error,
+.empty,
+.status {
+  padding: 28px 16px;
+  color: var(--muted);
+}
+
+.contact {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  margin: 40px auto 70px;
+  padding: 0 20px;
+}
+
+.contact-img {
+  width: 220px;
+  height: 320px;
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.contact-content {
+  flex: 1;
+}
+
+.contact-content h2 {
+  margin: 0 0 10px;
+  font-size: 28px;
+  line-height: 1.2;
+}
+
+.contact-content p {
+  color: var(--muted);
+  margin: 0 0 16px;
+  max-width: 520px;
+  line-height: 1.6;
+}
+
+.contact-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.btn::before {
+  content: "";
+  width: 18px;
+  height: 18px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.whatsapp {
+  background: #25D366;
+}
+
+.whatsapp::before {
+  background-image: url("https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg");
+}
+
+.instagram {
+  background: #E1306C;
+}
+
+.instagram::before {
+  background-image: url("https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png");
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: var(--nav-bg);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+.topbar-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.back-link {
+  text-decoration: none;
+  color: var(--text);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.doc-title {
+  font-size: 14px;
+  color: var(--muted);
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 60%;
+}
+
+.viewer {
+  max-width: 1100px;
+  margin: 0 auto;
+  background: white;
+}
+
+.page {
+  width: 100%;
+  display: block;
+}
+
+.nav {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--nav-bg);
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  z-index: 1200;
+}
+
+.nav button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav button svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--text);
+}
+
+.counter {
+  font-size: 12px;
+  color: var(--muted);
+  min-width: 44px;
+  text-align: center;
+}
+
+@media (max-width: 800px) {
+  .hero {
+    padding: 40px 16px 28px;
   }
-  try {
-    input = InputSchema.parse(input)
-    switch (input.query) {
-      case LAMBDA_TREEZOR_SERVICE_CARD_QUERIES.UPSERT_CARD_PIN:
-        await usecases.updatePin.updateCardPin(input.payload)
-        break
-      case LAMBDA_TREEZOR_SERVICE_CARD_QUERIES.DESTROY_CARD:
-        await usecases.destroyCard.destroyCard(input.payload)
-        break
-      case LAMBDA_TREEZOR_SERVICE_CARD_QUERIES.SET_CARD_LOST:
-        await usecases.setCardStatus.setCardLost(input.payload)
-        break
-      case LAMBDA_TREEZOR_SERVICE_CARD_QUERIES.SET_CARD_STOLEN:
-        await usecases.setCardStatus.setCardStolen(input.payload)
-        break
-      case LAMBDA_TREEZOR_SERVICE_CARD_QUERIES.CREATE_VIRTUAL_CARD:
-        return usecases.createVirtualCard.create(input.payload)
-        break
-      default:
-        throw new UseCaseError(
-          `Query ${(input as Input).query} is not implemented`,
-        )
-    }
-  } catch (err) {
-    logger.error(err)
-    throw err
+
+  .section {
+    padding: 12px 16px 30px;
+  }
+
+  .card {
+    grid-column: span 12;
+  }
+
+  .contact {
+    flex-direction: column;
+    text-align: center;
+    margin: 30px auto 60px;
+    padding: 0 16px;
+  }
+
+  .contact-img {
+    width: 100%;
+    max-width: 420px;
+    height: auto;
+    aspect-ratio: 3 / 4;
+  }
+
+  .contact-actions {
+    justify-content: center;
+  }
+
+  .topbar-inner {
+    padding: 10px 12px;
+  }
+
+  .doc-title {
+    max-width: 55%;
+    font-size: 13px;
+  }
+
+  .nav {
+    bottom: 10px;
   }
 }
