@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <style>
+    :root {
+      --primary: #d88c9a;
+      --secondary: #f7ede2;
+      --text: #1f1f1f;
+      --muted: #666;
+      --bg: #ffffff;
+      --nav-bg: rgba(255,255,255,0.95);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: var(--nav-bg);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .topbar-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .back-link {
+      text-decoration: none;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .doc-title {
+      font-size: 14px;
+      color: var(--muted);
+      text-align: right;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 60%;
+    }
+
+    .viewer {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: white;
+    }
+
+    .page {
+      width: 100%;
+      display: block;
+    }
+
+    .nav {
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--nav-bg);
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      z-index: 1200;
+    }
+
+    .nav button {
+      border: none;
+      background: none;
+      cursor: pointer;
+      padding: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav button svg {
+      width: 20px;
+      height: 20px;
+      stroke: var(--text);
+    }
+
+    .counter {
+      font-size: 12px;
+      color: var(--muted);
+      min-width: 44px;
+      text-align: center;
+    }
+
+    .status {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 16px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 768px) {
+      .topbar-inner {
+        padding: 10px 12px;
+      }
+
+      .doc-title {
+        max-width: 55%;
+        font-size: 13px;
+      }
+
+      .nav {
+        bottom: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="back-link" href="/">
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        <span>Back</span>
+      </a>
+      <div id="docTitle" class="doc-title"></div>
+    </div>
+  </header>
+
+  <div id="status" class="status">Loading…</div>
+  <div id="viewer" class="viewer" style="display:none;"></div>
+
+  <div class="nav">
+    <button onclick="prevPage()" aria-label="Previous">
+      <svg viewBox="0 0 24 24">
+        <path d="M15 18l-6-6 6-6" fill="none" stroke-width="2"/>
+      </svg>
+    </button>
+    <div id="counter" class="counter">0</div>
+    <button onclick="nextPage()" aria-label="Next">
+      <svg viewBox="0 0 24 24">
+        <path d="M9 6l6 6-6 6" fill="none" stroke-width="2"/>
+      </svg>
+    </button>
+  </div>
+
+  <script>
+    const SITE_CSV_URL = "SITE_CSV_URL";
+    const DOCS_CSV_URL = "DOCS_CSV_URL";
+
+    const path = window.location.pathname.split('/').filter(Boolean);
+    const slug = path[0] || '';
+
+    const isMobile = window.innerWidth <= 768;
+    const device = isMobile ? 'mobile' : 'desktop';
+
+    const statusEl = document.getElementById('status');
+    const viewer = document.getElementById('viewer');
+    const counter = document.getElementById('counter');
+    const docTitleEl = document.getElementById('docTitle');
+
+    let elements = [];
+    let current = 0;
+
+    function parseCSV(text) {
+      const lines = text.trim().split(/\r?\n/);
+      const headers = splitCSVLine(lines[0]).map(h => h.trim());
+
+      return lines.slice(1).filter(Boolean).map(line => {
+        const values = splitCSVLine(line);
+        const obj = {};
+        headers.forEach((h, i) => obj[h] = (values[i] || "").trim());
+        return obj;
+      });
+    }
+
+    function splitCSVLine(line) {
+      const result = [];
+      let current = "";
+      let inQuotes = false;
+
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        const next = line[i + 1];
+
+        if (char === '"') {
+          if (inQuotes && next === '"') {
+            current += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (char === ',' && !inQuotes) {
+          result.push(current);
+          current = "";
+        } else {
+          current += char;
+        }
+      }
+
+      result.push(current);
+      return result;
+    }
+
+    function setTheme(siteRow) {
+      const root = document.documentElement;
+      if (siteRow.primary_color) root.style.setProperty('--primary', siteRow.primary_color);
+      if (siteRow.secondary_color) root.style.setProperty('--secondary', siteRow.secondary_color);
+    }
+
+    function updateCounter(i) {
+      counter.textContent = elements.length ? `${i + 1} / ${elements.length}` : '0';
+    }
+
+    function scrollToPage(i) {
+      if (i < 0 || i >= elements.length) return;
+      current = i;
+      elements[i].scrollIntoView({ behavior: 'smooth', block: 'start' });
+      updateCounter(i);
+    }
+
+    function nextPage() {
+      if (current < elements.length - 1) scrollToPage(current + 1);
+    }
+
+    function prevPage() {
+      if (current > 0) scrollToPage(current - 1);
+    }
+
+    async function loadDoc() {
+      try {
+        const [siteRes, docsRes] = await Promise.all([
+          fetch(SITE_CSV_URL),
+          fetch(DOCS_CSV_URL)
+        ]);
+
+        if (!siteRes.ok) throw new Error(`Site config fetch failed: ${siteRes.status}`);
+        if (!docsRes.ok) throw new Error(`Docs fetch failed: ${docsRes.status}`);
+
+        const siteRows = parseCSV(await siteRes.text());
+        const docsRows = parseCSV(await docsRes.text());
+
+        setTheme(siteRows[0] || {});
+
+        const pages = docsRows
+          .filter(r => r.slug === slug && r.device === device)
+          .sort((a, b) => Number(a.order) - Number(b.order));
+
+        const anyDocRow = docsRows.find(r => r.slug === slug);
+        docTitleEl.textContent = anyDocRow ? (anyDocRow.title || anyDocRow.slug) : slug;
+        document.title = anyDocRow ? (anyDocRow.title || anyDocRow.slug) : 'Document';
+
+        if (!pages.length) {
+          statusEl.textContent = `No content found for "${slug}" (${device}).`;
+          return;
+        }
+
+        viewer.innerHTML = '';
+        elements = [];
+
+        pages.forEach((p, index) => {
+          const img = document.createElement('img');
+          img.src = p.image_url;
+          img.alt = `Page ${index + 1}`;
+          img.className = 'page';
+          img.loading = 'lazy';
+          viewer.appendChild(img);
+          elements.push(img);
+        });
+
+        statusEl.style.display = 'none';
+        viewer.style.display = 'block';
+        updateCounter(0);
+
+        const observer = new IntersectionObserver(entries => {
+          const visible = entries
+            .filter(e => e.isIntersecting)
+            .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+          if (visible) {
+            current = elements.indexOf(visible.target);
+            updateCounter(current);
+          }
+        }, { threshold: 0.6 });
+
+        elements.forEach(el => observer.observe(el));
+      } catch (err) {
+        statusEl.textContent = err.message || 'Error';
+      }
+    }
+
+    loadDoc();
+  </script>
+</body>
+</html>
