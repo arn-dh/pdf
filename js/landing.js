@@ -14,12 +14,18 @@ function renderContact(site) {
   const wa = document.getElementById("whatsappBtn");
   const ig = document.getElementById("instagramBtn");
 
-  const hasContent =
+  const hasContent = Boolean(
     site.profile_image ||
     site.contact_title ||
     site.contact_text ||
     site.whatsapp_link ||
-    site.instagram_link;
+    site.instagram_link
+  );
+
+  if (!hasContent) {
+    section.style.display = "none";
+    return;
+  }
 
   section.style.display = "flex";
 
@@ -103,7 +109,14 @@ async function initLanding() {
   const status = document.getElementById("status");
 
   try {
-    const [site, docsRows] = await Promise.all([getSiteData(), getDocsData()]);
+    const [site, docsRows] = await Promise.all([
+      getSiteData(),
+      getDocsData()
+    ]);
+
+    console.log("SITE DATA:", site);
+    console.log("DOCS DATA:", docsRows);
+
     applyTheme(site);
     renderLandingText(site);
     renderContact(site);
@@ -111,6 +124,7 @@ async function initLanding() {
     const docs = renderMenu(docsRows);
     renderCards(docs);
   } catch (err) {
+    console.error("INIT LANDING ERROR:", err);
     status.className = "error";
     status.textContent = err.message || "Error";
   }
