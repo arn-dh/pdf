@@ -113,9 +113,6 @@ async function initLanding() {
       getDocsData()
     ]);
 
-    console.log("SITE DATA:", site);
-    console.log("DOCS DATA:", docsRows);
-
     applyTheme(site);
     renderLandingText(site);
     renderContact(site);
