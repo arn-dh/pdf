@@ -96,7 +96,6 @@ function renderCards(docs) {
           </svg>
         </div>
       </div>
-      <div class="card-slug">/${doc.slug}</div>
     `;
     grid.appendChild(a);
   });
