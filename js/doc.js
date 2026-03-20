@@ -5,6 +5,7 @@ const device = isMobile ? "mobile" : "desktop";
 
 const statusEl = document.getElementById("docStatus");
 const viewer = document.getElementById("viewer");
+const nav = document.getElementById("nav");
 const counter = document.getElementById("counter");
 const docTitleEl = document.getElementById("docTitle");
 const prevBtn = document.getElementById("prevBtn");
@@ -73,6 +74,7 @@ function renderPages(pages) {
 
   statusEl.style.display = "none";
   viewer.style.display = "block";
+  if (!isMobile) nav.style.display = "flex";
   updateCounter(0);
   observePages();
 }
@@ -88,13 +90,15 @@ async function initDoc() {
       .sort((a, b) => Number(a.order) - Number(b.order));
 
     if (!pages.length) {
-      statusEl.textContent = `No content found for "${slug}" (${device}).`;
+      statusEl.innerHTML = `No content found for "${slug}" (${device}).`;
+      statusEl.className = "status";
       return;
     }
 
     renderPages(pages);
   } catch (err) {
-    statusEl.textContent = err.message || "Error";
+    statusEl.innerHTML = err.message || "Error";
+    statusEl.className = "status";
   }
 }
 
