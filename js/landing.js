@@ -1,7 +1,27 @@
 function renderLandingText(site) {
-  document.getElementById("siteTitle").textContent = site.site_title || "Documents";
-  document.getElementById("welcome").textContent = site.welcome_text || "Welcome";
-  document.getElementById("intro").textContent = site.intro_text || "Explore the documents below.";
+  const siteTitle = document.getElementById("siteTitle");
+  if (site.site_title) {
+    siteTitle.textContent = site.site_title;
+    siteTitle.style.display = "";
+  } else {
+    siteTitle.style.display = "none";
+  }
+
+  const welcome = document.getElementById("welcome");
+  if (site.welcome_text) {
+    welcome.textContent = site.welcome_text;
+    welcome.style.display = "";
+  } else {
+    welcome.style.display = "none";
+  }
+
+  const intro = document.getElementById("intro");
+  if (site.intro_text) {
+    intro.textContent = site.intro_text;
+    intro.style.display = "";
+  } else {
+    intro.style.display = "none";
+  }
   const desc = document.getElementById("description");
   if (site.description_text) {
     desc.textContent = site.description_text;
@@ -9,7 +29,7 @@ function renderLandingText(site) {
   } else {
     desc.style.display = "none";
   }
-  document.title = site.site_title || "Documents";
+  document.title = site.site_title || "";
 }
 
 function renderContact(site) {
