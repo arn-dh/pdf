@@ -7,19 +7,20 @@
   <link rel="stylesheet" href="./css/styles.css" />
 </head>
 <body>
-  <header class="hero">
+  <div id="pageLoader" class="page-loader"><div class="spinner"></div></div>
+
+  <header class="hero" style="display:none;">
     <div class="wrap">
-      <div id="welcome" class="eyebrow">Welcome</div>
-      <h1 id="siteTitle">Yoga with Gabi</h1>
-      <p id="intro" class="intro">Explore the documents below.</p>
-      <p id="description" class="description">A simple space for yoga resources.</p>
+      <div id="welcome" class="eyebrow"></div>
+      <h1 id="siteTitle"></h1>
+      <p id="intro" class="intro"></p>
+      <p id="description" class="description"></p>
     </div>
   </header>
 
-  <main class="section">
+  <main class="section" style="display:none;">
     <div class="wrap">
-      <p class="section-title">Documents</p>
-      <div id="status" class="loading">Loading…</div>
+      <div id="status" class="loading"></div>
       <div id="grid" class="grid" style="display:none;"></div>
     </div>
   </main>

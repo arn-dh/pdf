@@ -2,7 +2,13 @@ function renderLandingText(site) {
   document.getElementById("siteTitle").textContent = site.site_title || "Documents";
   document.getElementById("welcome").textContent = site.welcome_text || "Welcome";
   document.getElementById("intro").textContent = site.intro_text || "Explore the documents below.";
-  document.getElementById("description").textContent = site.description_text || "";
+  const desc = document.getElementById("description");
+  if (site.description_text) {
+    desc.textContent = site.description_text;
+    desc.style.display = "";
+  } else {
+    desc.style.display = "none";
+  }
   document.title = site.site_title || "Documents";
 }
 
@@ -36,8 +42,19 @@ function renderContact(site) {
     img.style.display = "none";
   }
 
-  title.textContent = site.contact_title || "";
-  text.textContent = site.contact_text || "";
+  if (site.contact_title) {
+    title.textContent = site.contact_title;
+    title.style.display = "";
+  } else {
+    title.style.display = "none";
+  }
+
+  if (site.contact_text) {
+    text.textContent = site.contact_text;
+    text.style.display = "";
+  } else {
+    text.style.display = "none";
+  }
 
   if (site.whatsapp_link) {
     wa.href = site.whatsapp_link;
@@ -106,6 +123,15 @@ function renderCards(docs) {
 
 async function initLanding() {
   const status = document.getElementById("status");
+  const loader = document.getElementById("pageLoader");
+  const header = document.querySelector("header");
+  const main = document.querySelector("main");
+
+  function revealPage() {
+    loader.style.display = "none";
+    header.style.display = "";
+    main.style.display = "";
+  }
 
   try {
     const [site, docsRows] = await Promise.all([
@@ -119,8 +145,11 @@ async function initLanding() {
 
     const docs = renderMenu(docsRows);
     renderCards(docs);
+
+    revealPage();
   } catch (err) {
     console.error("INIT LANDING ERROR:", err);
+    revealPage();
     status.className = "error";
     status.textContent = err.message || "Error";
   }
