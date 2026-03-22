@@ -58,8 +58,12 @@ async function getDocsData() {
   return await fetchCSV(DOCS_CSV_URL);
 }
 
+function isValidColor(value) {
+  return /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(value);
+}
+
 function applyTheme(siteRow) {
   const root = document.documentElement;
-  if (siteRow.primary_color) root.style.setProperty("--primary", siteRow.primary_color);
-  if (siteRow.secondary_color) root.style.setProperty("--secondary", siteRow.secondary_color);
+  if (siteRow.primary_color && isValidColor(siteRow.primary_color)) root.style.setProperty("--primary", siteRow.primary_color);
+  if (siteRow.secondary_color && isValidColor(siteRow.secondary_color)) root.style.setProperty("--secondary", siteRow.secondary_color);
 }

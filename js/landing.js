@@ -124,16 +124,22 @@ function renderCards(docs) {
     const a = document.createElement("a");
     a.className = "card";
     a.href = `/${doc.slug}`;
-    a.innerHTML = `
-      <div class="card-top">
-        <h2 class="card-title">${doc.title}</h2>
-        <div class="arrow" aria-hidden="true">
-          <svg width="18" height="18" viewBox="0 0 24 24">
-            <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2"/>
-          </svg>
-        </div>
-      </div>
-    `;
+
+    const cardTop = document.createElement("div");
+    cardTop.className = "card-top";
+
+    const h2 = document.createElement("h2");
+    h2.className = "card-title";
+    h2.textContent = doc.title;
+
+    const arrow = document.createElement("div");
+    arrow.className = "arrow";
+    arrow.setAttribute("aria-hidden", "true");
+    arrow.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2"/></svg>`;
+
+    cardTop.appendChild(h2);
+    cardTop.appendChild(arrow);
+    a.appendChild(cardTop);
     grid.appendChild(a);
   });
 

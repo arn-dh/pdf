@@ -90,14 +90,14 @@ async function initDoc() {
       .sort((a, b) => Number(a.order) - Number(b.order));
 
     if (!pages.length) {
-      statusEl.innerHTML = `No content found for "${slug}" (${device}).`;
+      statusEl.textContent = `No content found for "${slug}" (${device}).`;
       statusEl.className = "status";
       return;
     }
 
     renderPages(pages);
   } catch (err) {
-    statusEl.innerHTML = err.message || "Error";
+    statusEl.textContent = "An error occurred. Please try again.";
     statusEl.className = "status";
   }
 }
