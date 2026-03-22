@@ -1,9 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Document</title>
+  <title>Yoga com Gabi</title>
+  <meta name="description" content="Yoga para gestantes, aulas de yoga online e massagem yoga ayurvédica com Gabi." />
+  <link id="canonical" rel="canonical" href="https://yogawithgabidp.com/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta id="og-url" property="og:url" content="https://yogawithgabidp.com/" />
+  <meta id="og-title" property="og:title" content="Yoga com Gabi" />
+  <meta property="og:description" content="Yoga para gestantes, aulas de yoga online e massagem yoga ayurvédica com Gabi." />
+  <meta property="og:locale" content="pt_BR" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta id="tw-title" name="twitter:title" content="Yoga com Gabi" />
+  <meta name="twitter:description" content="Yoga para gestantes, aulas de yoga online e massagem yoga ayurvédica com Gabi." />
+
+  <script>
+    // Update canonical and OG url/title once slug is known
+    const _slug = window.location.pathname.replace(/^\//, "").split("/")[0];
+    if (_slug) {
+      const _url = "https://yogawithgabidp.com/" + _slug;
+      document.getElementById("canonical").href = _url;
+      document.getElementById("og-url").content = _url;
+    }
+  </script>
+
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
@@ -13,7 +38,7 @@
         <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2"/>
         </svg>
-        <span>Yoga with Gabi</span>
+        <span>Yoga com Gabi</span>
       </a>
       <div id="docTitle" class="doc-title"></div>
     </div>
